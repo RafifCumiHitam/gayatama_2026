@@ -134,6 +134,14 @@ class ApiClient {
     return this.request<Document>(`/documents/${documentId}`);
   }
 
+  public async getDocumentSections(documentId: string): Promise<any[]> {
+    return this.request<any[]>(`/documents/${documentId}/sections`);
+  }
+
+  public async getDocumentContent(documentId: string): Promise<{ document_id: string; title: string; total_sections: number; sections: any[] }> {
+    return this.request<{ document_id: string; title: string; total_sections: number; sections: any[] }>(`/documents/${documentId}/content`);
+  }
+
   public async deleteDocument(documentId: string): Promise<{ message: string }> {
     return this.request<{ message: string }>(`/documents/${documentId}`, {
       method: "DELETE",

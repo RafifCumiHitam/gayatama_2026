@@ -45,16 +45,37 @@ def process_document_job(document_id: UUID, db: Session, storage: StorageService
 
         full_file_path = str(storage._get_full_path(doc.original_file_path))
 
-        # 2. Execute PyMuPDF PDF extraction
+        # 2. Stage 1 (0-20%): Execute PyMuPDF PDF extraction
         processor = PDFProcessor()
         extraction = processor.extract(document_id=str(doc.id), file_path=full_file_path)
+        job.progress = 20
+        db.commit()
 
-        # 3. Execute Phase 1B Layout Analysis & Reading Order Engine
+        # 3. Stage 2 (20-40%): Execute Phase 1B Layout Analysis & Reading Order Engine
         from app.services.document_analyzer.layout_analyzer import LayoutAnalyzer
         analyzer = LayoutAnalyzer()
         ordered_doc = analyzer.analyze(extraction)
+        job.progress = 40
+        db.commit()
 
-        # 4. Store intermediate analyzed extraction JSON inside processing_job record
+        # 4. Stage 3 (40-60%): Execute Phase 1C Part A Semantic Document Analysis
+        from app.services.document_semantic.semantic_analyzer import SemanticAnalyzer
+        semantic_analyzer = SemanticAnalyzer()
+        semantic_doc = semantic_analyzer.analyze(ordered_doc)
+        job.progress = 60
+        db.commit()
+
+        # 5. Stage 4 (60-85%): Execute Phase 1C Part B Accessible Reflow Engine
+        from app.services.document_reflow.reflow_engine import ReflowEngine
+        reflow_engine = ReflowEngine()
+        readable_doc = reflow_engine.reflow(semantic_doc)
+        job.progress = 85
+        db.commit()
+
+        # 6. Stage 5 (85-100%): Persist semantic sections to database document_sections table
+        from app.services.document_semantic.persistence import persist_semantic_sections
+        persist_semantic_sections(semantic_doc, db)
+
         job.status = "COMPLETED"
         job.progress = 100
         job.completed_at = datetime.utcnow()

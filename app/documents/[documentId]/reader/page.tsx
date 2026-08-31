@@ -4,13 +4,23 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { apiClient, Document } from "@/lib/api/client";
-import { ArrowLeft, BookOpen, Sliders, Volume2, ShieldAlert } from "lucide-react";
+import { ArrowLeft, BookOpen, Sliders, ShieldCheck } from "lucide-react";
+
+interface SectionItem {
+  id: string;
+  section_type: string;
+  title?: string;
+  content?: string;
+  order_index: number;
+  page_number?: number;
+}
 
 export default function DocumentReaderPage() {
   const params = useParams();
   const documentId = params.documentId as string;
 
   const [document, setDocument] = useState<Document | null>(null);
+  const [sections, setSections] = useState<SectionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -23,9 +33,14 @@ export default function DocumentReaderPage() {
 
   useEffect(() => {
     if (documentId) {
-      apiClient
-        .getDocument(documentId)
-        .then((doc) => setDocument(doc))
+      Promise.all([
+        apiClient.getDocument(documentId),
+        apiClient.getDocumentSections(documentId).catch(() => []),
+      ])
+        .then(([doc, secData]) => {
+          setDocument(doc);
+          setSections(secData);
+        })
         .catch((err) => setError(err.message || "Failed to load document."))
         .finally(() => setLoading(false));
     }
@@ -34,7 +49,7 @@ export default function DocumentReaderPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[var(--cream-bg)] flex items-center justify-center">
-        <p className="text-stone-600">Loading reader...</p>
+        <p className="text-stone-600">Loading reader content...</p>
       </div>
     );
   }
@@ -62,7 +77,7 @@ export default function DocumentReaderPage() {
           <span className="font-medium text-stone-900 truncate max-w-md">
             {document.original_filename}
           </span>
-          <span className="text-xs px-2 py-0.5 bg-amber-100 text-amber-900 rounded font-mono">
+          <span className="text-xs px-2 py-0.5 bg-green-100 text-green-900 rounded font-mono">
             {document.processing_status}
           </span>
         </div>
@@ -159,11 +174,11 @@ export default function DocumentReaderPage() {
         ) : (
           <div className="bg-white border border-stone-200 rounded-xl p-8 md:p-12 shadow-sm min-h-[600px]">
             {/* Status notice */}
-            <div className="p-4 mb-8 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-start space-x-3">
-              <ShieldAlert className="w-5 h-5 shrink-0 text-amber-700 mt-0.5" />
+            <div className="p-4 mb-8 bg-green-50 border border-green-200 rounded-lg text-xs text-green-900 flex items-start space-x-3">
+              <ShieldCheck className="w-5 h-5 shrink-0 text-green-700 mt-0.5" />
               <div>
-                <span className="font-semibold block mb-0.5">Phase 0 Status Notice</span>
-                Document parsing and text extraction will be implemented in Phase 1. The custom reading preferences configured above will apply to extracted document sections.
+                <span className="font-semibold block mb-0.5">Semantic Reflow Complete</span>
+                Extracted {sections.length} semantic sections from PDF using PyMuPDF and deterministic layout analysis.
               </div>
             </div>
 
@@ -177,20 +192,38 @@ export default function DocumentReaderPage() {
               }}
               className="space-y-6 text-stone-800"
             >
-              <h1 className="text-2xl font-bold text-stone-900 border-b pb-4">
-                {document.original_filename}
-              </h1>
-
-              <p className="text-stone-600 italic text-sm">
-                (Document sections will populate here once PDF extraction is executed in Phase 1.)
-              </p>
-
-              <div className="p-6 bg-stone-50 rounded-lg border border-stone-200 space-y-3">
-                <h3 className="font-semibold text-stone-900 text-base">Example Accessible Accommodation Text</h3>
-                <p>
-                  ReadAble transforms documents into structured semantic sections, allowing readers to dynamically adjust line spacing, typography, and contrast themes according to individual cognitive accessibility preferences.
-                </p>
-              </div>
+              {sections.length === 0 ? (
+                <p className="text-stone-500 italic text-sm">No text sections extracted.</p>
+              ) : (
+                sections.map((sec) => {
+                  if (sec.section_type === "HEADING" || sec.section_type === "DOCUMENT_TITLE") {
+                    return (
+                      <h2 key={sec.id} className="text-xl font-bold text-stone-900 pt-4 border-b pb-2">
+                        {sec.title || sec.content}
+                      </h2>
+                    );
+                  }
+                  if (sec.section_type === "LIST") {
+                    return (
+                      <div key={sec.id} className="bg-stone-50 p-4 rounded-lg border border-stone-200 whitespace-pre-wrap">
+                        {sec.content}
+                      </div>
+                    );
+                  }
+                  if (sec.section_type === "FIGURE") {
+                    return (
+                      <div key={sec.id} className="p-4 border border-stone-200 rounded-lg text-center bg-stone-50 text-sm">
+                        [Figure: {sec.content}]
+                      </div>
+                    );
+                  }
+                  return (
+                    <p key={sec.id} className="whitespace-pre-wrap leading-relaxed">
+                      {sec.content}
+                    </p>
+                  );
+                })
+              )}
             </div>
           </div>
         )}

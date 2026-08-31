@@ -149,3 +149,61 @@ def delete_document(
     db.commit()
 
     return {"message": "Document deleted successfully."}
+
+
+@router.get("/{document_id}/sections")
+def get_document_sections(
+    document_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get persisted semantic sections for document (ownership verified)."""
+    doc = db.query(Document).filter(Document.id == document_id, Document.user_id == current_user.id).first()
+    if not doc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document not found."
+        )
+
+    from app.models.document_section import DocumentSection
+    from app.schemas.section import DocumentSectionResponse
+
+    sections = db.query(DocumentSection).filter(
+        DocumentSection.document_id == doc.id
+    ).order_by(DocumentSection.order_index.asc()).all()
+
+    return [DocumentSectionResponse.model_validate(s) for s in sections]
+
+
+@router.get("/{document_id}/content")
+def get_document_readable_content(
+    document_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get structured readable content for document (ownership verified)."""
+    doc = db.query(Document).filter(Document.id == document_id, Document.user_id == current_user.id).first()
+    if not doc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document not found."
+        )
+
+    from app.models.document_section import DocumentSection
+    from app.schemas.section import DocumentSectionResponse, ReadableContentResponse
+
+    sections = db.query(DocumentSection).filter(
+        DocumentSection.document_id == doc.id
+    ).order_by(DocumentSection.order_index.asc()).all()
+
+    sec_responses = [DocumentSectionResponse.model_validate(s) for s in sections]
+
+    # Look for top title heading
+    first_title = next((s.title for s in sections if s.title), doc.original_filename)
+
+    return ReadableContentResponse(
+        document_id=doc.id,
+        title=first_title,
+        total_sections=len(sec_responses),
+        sections=sec_responses
+    )
