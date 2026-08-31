@@ -1,0 +1,15 @@
+# Temporary test database
+test.db
+*.db
+
+# Python virtual environment & bytecode
+venv/
+__pycache__/
+*.pyc
+
+# Local upload storage
+backend/storage/
+storage/
+
+# Environment files
+.env
