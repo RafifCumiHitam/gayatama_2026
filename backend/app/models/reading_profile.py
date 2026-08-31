@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from app.core.time import utc_now
 from sqlalchemy import Column, String, Numeric, Boolean, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -26,8 +26,17 @@ class ReadingProfile(Base):
     tts_enabled = Column(Boolean, nullable=False, default=False)
     tts_speed = Column(Numeric(3, 2), nullable=False, default=1.0)
     is_default = Column(Boolean, nullable=False, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_at = Column(
+        DateTime(timezone=True),
+        default=utc_now,
+        nullable=False,
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        default=utc_now,
+        onupdate=utc_now,
+        nullable=False,
+    )
 
     user = relationship("User", back_populates="reading_profiles")
     reading_progress = relationship("ReadingProgress", back_populates="profile")

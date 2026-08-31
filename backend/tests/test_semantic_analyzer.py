@@ -28,7 +28,7 @@ def test_semantic_document_title_and_sections():
     analyzer = LayoutAnalyzer()
     semantic_analyzer = SemanticAnalyzer()
 
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/heading_document.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/heading_document.pdf").resolve())
     extraction = processor.extract("sem_1", pdf_path)
     ordered_doc = analyzer.analyze(extraction)
     semantic_doc = semantic_analyzer.analyze(ordered_doc)
@@ -48,7 +48,7 @@ def test_list_parsing():
     analyzer = LayoutAnalyzer()
     semantic_analyzer = SemanticAnalyzer()
 
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/lists.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/lists.pdf").resolve())
     extraction = processor.extract("sem_list", pdf_path)
     ordered_doc = analyzer.analyze(extraction)
     semantic_doc = semantic_analyzer.analyze(ordered_doc)
@@ -73,7 +73,7 @@ def test_header_footer_filtering():
     analyzer = LayoutAnalyzer()
     semantic_analyzer = SemanticAnalyzer()
 
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/header_footer.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/header_footer.pdf").resolve())
     extraction = processor.extract("sem_hf", pdf_path)
     ordered_doc = analyzer.analyze(extraction)
     semantic_doc = semantic_analyzer.analyze(ordered_doc)
@@ -89,7 +89,7 @@ def test_content_integrity_and_reflow():
     semantic_analyzer = SemanticAnalyzer()
     reflow_engine = ReflowEngine()
 
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/mixed_layout.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/mixed_layout.pdf").resolve())
     extraction = processor.extract("sem_reflow", pdf_path)
     ordered_doc = analyzer.analyze(extraction)
     semantic_doc = semantic_analyzer.analyze(ordered_doc)
@@ -106,7 +106,7 @@ def test_semantic_determinism():
     analyzer = LayoutAnalyzer()
     semantic_analyzer = SemanticAnalyzer()
 
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/mixed_layout.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/mixed_layout.pdf").resolve())
 
     ext1 = processor.extract("sem_det", pdf_path)
     s1 = semantic_analyzer.analyze(analyzer.analyze(ext1))

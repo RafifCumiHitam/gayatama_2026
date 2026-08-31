@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from app.core.time import utc_now
 from sqlalchemy import Column, String, Integer, Numeric, DateTime, ForeignKey, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -17,7 +17,11 @@ class AccessibilityReport(Base):
     warning_issues = Column(Integer, nullable=False, default=0)
     info_issues = Column(Integer, nullable=False, default=0)
     summary_json = Column("summary", JSON, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(
+    DateTime(timezone=True),
+    default=utc_now,
+    nullable=False,
+)
 
     document = relationship("Document", back_populates="accessibility_reports")
     issues = relationship("AccessibilityIssue", back_populates="report", cascade="all, delete-orphan")

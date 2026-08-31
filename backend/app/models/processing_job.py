@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from app.core.time import utc_now
 from sqlalchemy import Column, String, Integer, Text, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -15,8 +15,20 @@ class ProcessingJob(Base):
     status = Column(String(50), nullable=False, default="QUEUED")  # UPLOADED, QUEUED, PROCESSING, COMPLETED, FAILED, CANCELLED
     progress = Column(Integer, nullable=False, default=0)
     error_message = Column(Text, nullable=True)
-    started_at = Column(DateTime, nullable=True)
-    completed_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    started_at = Column(
+    DateTime(timezone=True),
+    nullable=True,
+    )
+
+    completed_at = Column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
+    created_at = Column(
+        DateTime(timezone=True),
+        default=utc_now,
+        nullable=False,
+    )
 
     document = relationship("Document", back_populates="processing_jobs")

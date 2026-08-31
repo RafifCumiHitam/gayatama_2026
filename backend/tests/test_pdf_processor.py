@@ -28,13 +28,13 @@ def generate_fixtures():
 
 def test_pdf_opens_successfully():
     processor = PDFProcessor()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/simple_single_column.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/simple_single_column.pdf").resolve())
     assert processor.validate(pdf_path) is True
 
 
 def test_single_page_extraction():
     processor = PDFProcessor()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/simple_single_column.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/simple_single_column.pdf").resolve())
     extraction = processor.extract("doc_1", pdf_path)
 
     assert extraction.document_id == "doc_1"
@@ -56,7 +56,7 @@ def test_single_page_extraction():
 
 def test_multi_page_extraction():
     processor = PDFProcessor()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/multi_page.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/multi_page.pdf").resolve())
     extraction = processor.extract("doc_multi", pdf_path)
 
     assert extraction.total_pages == 2
@@ -69,7 +69,7 @@ def test_multi_page_extraction():
 
 def test_two_column_extraction():
     processor = PDFProcessor()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/two_column.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/two_column.pdf").resolve())
     extraction = processor.extract("doc_col", pdf_path)
 
     assert extraction.total_pages == 1
@@ -82,7 +82,7 @@ def test_two_column_extraction():
 
 def test_image_pdf_extraction():
     processor = PDFProcessor()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/image_pdf.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/image_pdf.pdf").resolve())
     extraction = processor.extract("doc_img", pdf_path)
 
     page = extraction.pages[0]
@@ -94,7 +94,7 @@ def test_image_pdf_extraction():
 
 def test_empty_text_pdf_handling():
     processor = PDFProcessor()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/empty_text.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/empty_text.pdf").resolve())
     extraction = processor.extract("doc_empty", pdf_path)
 
     assert extraction.total_pages == 1
@@ -103,13 +103,13 @@ def test_empty_text_pdf_handling():
 
 def test_corrupted_pdf_handling():
     processor = PDFProcessor()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/corrupted.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/corrupted.pdf").resolve())
     with pytest.raises(CorruptedDocumentError):
         processor.extract("doc_bad", pdf_path)
 
 
 def test_missing_file_handling():
     processor = PDFProcessor()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/non_existent.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/non_existent.pdf").resolve())
     with pytest.raises(DocumentProcessorError):
         processor.extract("doc_missing", pdf_path)

@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
+from app.core.time import utc_now
 from typing import Any, Optional, Union
 from jose import jwt
 from passlib.context import CryptContext
@@ -23,9 +24,9 @@ def create_access_token(
 ) -> str:
     """Generate JWT access token for user subject."""
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = utc_now() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(
+        expire = utc_now() + timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
     to_encode = {"exp": expire, "sub": str(subject)}

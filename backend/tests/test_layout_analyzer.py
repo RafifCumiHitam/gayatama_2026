@@ -30,7 +30,7 @@ def generate_analyzer_fixtures():
 def test_single_column_reading_order():
     processor = PDFProcessor()
     analyzer = LayoutAnalyzer()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/simple_single_column.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/simple_single_column.pdf").resolve())
 
     extraction = processor.extract("doc_sc", pdf_path)
     ordered_doc = analyzer.analyze(extraction)
@@ -48,7 +48,7 @@ def test_single_column_reading_order():
 def test_two_column_reading_order():
     processor = PDFProcessor()
     analyzer = LayoutAnalyzer()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/two_column.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/two_column.pdf").resolve())
 
     extraction = processor.extract("doc_2col", pdf_path)
     ordered_doc = analyzer.analyze(extraction)
@@ -72,7 +72,7 @@ def test_two_column_reading_order():
 def test_heading_detection_and_classification():
     processor = PDFProcessor()
     analyzer = LayoutAnalyzer()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/heading_document.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/heading_document.pdf").resolve())
 
     extraction = processor.extract("doc_head", pdf_path)
     ordered_doc = analyzer.analyze(extraction)
@@ -89,7 +89,7 @@ def test_heading_detection_and_classification():
 def test_header_footer_detection():
     processor = PDFProcessor()
     analyzer = LayoutAnalyzer()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/header_footer.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/header_footer.pdf").resolve())
 
     extraction = processor.extract("doc_hf", pdf_path)
     ordered_doc = analyzer.analyze(extraction)
@@ -105,7 +105,7 @@ def test_header_footer_detection():
 def test_list_item_detection():
     processor = PDFProcessor()
     analyzer = LayoutAnalyzer()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/lists.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/lists.pdf").resolve())
 
     extraction = processor.extract("doc_list", pdf_path)
     ordered_doc = analyzer.analyze(extraction)
@@ -118,7 +118,7 @@ def test_list_item_detection():
 def test_mixed_layout_title_and_columns():
     processor = PDFProcessor()
     analyzer = LayoutAnalyzer()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/mixed_layout.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/mixed_layout.pdf").resolve())
 
     extraction = processor.extract("doc_mixed", pdf_path)
     ordered_doc = analyzer.analyze(extraction)
@@ -134,7 +134,7 @@ def test_mixed_layout_title_and_columns():
 def test_determinism():
     processor = PDFProcessor()
     analyzer = LayoutAnalyzer()
-    pdf_path = str(pathlib.Path("backend/tests/fixtures/documents/mixed_layout.pdf").resolve())
+    pdf_path = str(pathlib.Path("tests/fixtures/documents/mixed_layout.pdf").resolve())
 
     extraction1 = processor.extract("doc_det", pdf_path)
     res1 = analyzer.analyze(extraction1)

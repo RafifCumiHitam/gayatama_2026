@@ -13,3 +13,9 @@ storage/
 
 # Environment files
 .env
+
+node_modules/
+.next/
+backend/.venv/
+__pycache__/
+*.pyc

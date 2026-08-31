@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from app.core.time import utc_now
 from uuid import UUID
 from sqlalchemy.orm import Session
 from app.models.document import Document
@@ -34,7 +34,7 @@ def process_document_job(document_id: UUID, db: Session, storage: StorageService
 
     # 1. Update status to PROCESSING
     job.status = "PROCESSING"
-    job.started_at = datetime.utcnow()
+    job.started_at = utc_now()
     doc.processing_status = "PROCESSING"
     db.commit()
 
@@ -78,9 +78,9 @@ def process_document_job(document_id: UUID, db: Session, storage: StorageService
 
         job.status = "COMPLETED"
         job.progress = 100
-        job.completed_at = datetime.utcnow()
+        job.completed_at = utc_now()
         doc.processing_status = "COMPLETED"
-        doc.processed_at = datetime.utcnow()
+        doc.processed_at = utc_now()
 
         db.commit()
         db.refresh(job)
@@ -91,7 +91,7 @@ def process_document_job(document_id: UUID, db: Session, storage: StorageService
         job.status = "FAILED"
         job.progress = 0
         job.error_message = f"Processing failed: {str(e)}"
-        job.completed_at = datetime.utcnow()
+        job.completed_at = utc_now()
         doc.processing_status = "FAILED"
         db.commit()
         db.refresh(job)
