@@ -49,7 +49,12 @@ def process_document_job(document_id: UUID, db: Session, storage: StorageService
         processor = PDFProcessor()
         extraction = processor.extract(document_id=str(doc.id), file_path=full_file_path)
 
-        # 3. Store intermediate extraction JSON metadata inside processing_job record
+        # 3. Execute Phase 1B Layout Analysis & Reading Order Engine
+        from app.services.document_analyzer.layout_analyzer import LayoutAnalyzer
+        analyzer = LayoutAnalyzer()
+        ordered_doc = analyzer.analyze(extraction)
+
+        # 4. Store intermediate analyzed extraction JSON inside processing_job record
         job.status = "COMPLETED"
         job.progress = 100
         job.completed_at = datetime.utcnow()
