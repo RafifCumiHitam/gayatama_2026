@@ -63,16 +63,21 @@ def test_auth_and_documents_flow():
     assert me_response.status_code == 200
     assert me_response.json()["email"] == "userA@example.com"
 
-    # 4. Upload PDF document as User A
-    pdf_content = b"%PDF-1.4 mock pdf content"
-    files = {"file": ("test_doc.pdf", io.BytesIO(pdf_content), "application/pdf")}
+    # 4. Upload valid PDF document as User A
+    import fitz
+    doc_fitz = fitz.open()
+    doc_fitz.new_page().insert_text((50, 50), "Test PDF content for ReadAble Phase 1A")
+    pdf_bytes = doc_fitz.tobytes()
+    doc_fitz.close()
+
+    files = {"file": ("test_doc.pdf", io.BytesIO(pdf_bytes), "application/pdf")}
     upload_res = client.post("/api/v1/documents", headers=headers_a, files=files)
     assert upload_res.status_code == 201
     doc_data = upload_res.json()
     doc_id = doc_data["id"]
     assert doc_data["original_filename"] == "test_doc.pdf"
-    assert doc_data["processing_status"] == "QUEUED"
-    assert doc_data["latest_job"]["status"] == "QUEUED"
+    assert doc_data["processing_status"] == "COMPLETED"
+    assert doc_data["latest_job"]["status"] == "COMPLETED"
 
     # 5. List documents for User A
     list_res = client.get("/api/v1/documents", headers=headers_a)

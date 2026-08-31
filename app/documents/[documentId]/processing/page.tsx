@@ -88,7 +88,9 @@ export default function DocumentProcessingPage() {
               </span>
             </div>
             <p className="text-sm text-stone-700">
-              Waiting for document processing. The deterministic PDF parsing engine will process this file in Phase 1.
+              {document.processing_status === "COMPLETED"
+                ? "Document processing complete. Raw text blocks extracted successfully."
+                : "Waiting for document processing."}
             </p>
           </div>
 

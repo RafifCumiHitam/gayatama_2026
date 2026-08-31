@@ -68,6 +68,11 @@ def upload_document(
     db.commit()
     db.refresh(job)
 
+    # Execute PDF extraction job (QUEUED -> PROCESSING -> COMPLETED/FAILED)
+    from app.services.processing_service import process_document_job
+    job = process_document_job(doc.id, db, storage)
+    db.refresh(doc)
+
     return DocumentDetailResponse(
         id=doc.id,
         user_id=doc.user_id,
