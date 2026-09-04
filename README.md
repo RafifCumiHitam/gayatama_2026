@@ -15,6 +15,6 @@ PRD.md      Product requirements
 
 ```bash
 cd frontend 
-npm install   # or npm install
+npm install
 npm run dev
 ```
