@@ -14,9 +14,7 @@ PRD.md      Product requirements
 ## Run frontend
 
 ```bash
-cd frontend
-pnpm install   # or npm install
-pnpm dev
+cd frontend 
+npm install   # or npm install
+npm run dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000).
