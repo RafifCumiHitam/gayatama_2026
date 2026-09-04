@@ -7,7 +7,8 @@ Universal accessible document converter — turn PDFs, DOCX, and images into a p
 ```
 frontend/   Next.js app (upload → process → profile → reader)
 backend/    Processing API (reserved)
-docs/       PRD, ERD, DESIGN
+ERD.md      Database design
+PRD.md      Product requirements
 ```
 
 ## Run frontend
@@ -17,3 +18,5 @@ cd frontend
 pnpm install   # or npm install
 pnpm dev
 ```
+
+Open [http://localhost:3000](http://localhost:3000).
